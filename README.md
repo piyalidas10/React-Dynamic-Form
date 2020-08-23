@@ -1,68 +1,110 @@
-# React js
+# Dynamic Login Registration form in React js
 
-https://www.educative.io/edpresso/react-form-validation
+1. At a time only one form will be present in DOM
+2. Channing the form fields of form coponent
 
-### Add Boottrap
-npm install --save bootstrap
-
-
+### Run Application
 ```
-function Fruit(props) {
-  return (
-    <div className="fruit">
-      <p>Name: {props.name}</p>
-      <p>Price: {props.price}</p>
-    </div>
-  );
-}
-
-ReactDOM.render(<Fruit name="Banana" price="4"/>, document.getElementById('f1'));
-
-ReactDOM.render(<Fruit name="Apple" price="12"/>, document.getElementById('f2'));
-
-function Vegetable(props) {
-  return (
-    <div className="vegetable">
-      <p>Name: {props.name}</p>
-      <p>Price: {props.price}</p>
-    </div>  
-  );
-}
-var vegetablelist = (
-  <div>
-    <Vegetable name="Potato" price="25"/>
-    <Vegetable name="Lady finger" price="40"/>
-  </div>
-);
-ReactDOM.render(vegetablelist, document.getElementById('vegetablelist'));
+npm start
+http://localhost:3000/
 ```
 
-### Props
-props  allow you to pass data from a parent (wrapping) component to a child (embedded) component.
+![Dynamic Form in React](dynamic_form.png)
+
+### Form Component
+Form is Class based component
+This component is used to create Form and passing form fields value
 
 ```
-const post = (props) => {
+<form className="mt-4" ref={form => this.form = form} onSubmit={this.formSubmit}>
+                {
+                    this.props.formFields.map(ele => {
+                        return (
+                            <Formfield
+                            ele={ele}
+                            key={ele.key}
+                            handleChange={this.handleChange}
+                            ></Formfield>
+                        )
+                    })
+                }
+                <div className="form-group text-center">
+                    <button className="btn btn-primary" type="submit">{this.props.btnName}</button>
+                </div>
+            </form>
+```
+
+
+### Formfield Component
+Formfield is a Function Component
+This component is used to generate form fields regarding field values
+
+```
+const Formfield = (props) => {
+    console.log(props);
+    const {ele:{input, key, required, items}, handleChange} = props;
     return (
-        <div>
-            <h1>{props.title}</h1>
-        </div>
-    );
+        <div className="form-group" key={key}>
+        {
+            (input === 'text' || input === 'email' || input === 'password' || input === 'number' || input === 'date') ? (
+                <div className="row">
+                    <label className="col-md-4">{key}</label>
+                        <div className="col-md-8">
+                            <input
+                            className="form-control"
+                            type={input}
+                            name={key}
+                            placeholder={key}
+                            required={required}
+                            onChange={handleChange}/>
+                        </div>
+                </div> 
+            ) : (
+                <React.Fragment>
+                  {
+                     (input === 'radio')? (
+                        <div className="row">
+                        <label className="col-md-4">{key}</label>
+                        {
+                            items.map(eleRadio => (
+                                <div className="form-check-inline" key={eleRadio.name}>
+                                    <label className="form-check-label">
+                                        <input
+                                        type={input}
+                                        className="form-check-input"
+                                        name={key}
+                                        placeholder={eleRadio.name}
+                                        required={required}
+                                        value={eleRadio.name}
+                                        onChange={handleChange}/>
+                                        {eleRadio.name}
+                                    </label>
+                                </div>
+                            ))
+                        }
+                        </div>
+                     ) : (
+                        <div className="row">
+                        <label className="col-md-4">{key}</label>
+                        <div className="col-md-8">
+                            <textarea 
+                            className="form-control"
+                            name={key}
+                            placeholder={key}
+                            onChange={handleChange}
+                            required={required}></textarea>
+                        </div>
+                    </div>
+                     )
+                  }
+                </React.Fragment>
+            )
+               
+        }
+        </div>                  
+    )
 }
 ```
 
-### State
-Whilst props allow you to pass data down the component tree (and hence trigger an UI update), state is used to change the component, well, state from within. Changes to state also trigger an UI update.
 
-```
-class NewPost extends Component { // state can only be accessed in class-based components!
-    state = {
-        counter: 1
-    };  
- 
-    render () { // Needs to be implemented in class-based components! Needs to return some JSX!
-        return (
-            <div>{this.state.counter}</div>
-        );
-    }
-}
-```
+
