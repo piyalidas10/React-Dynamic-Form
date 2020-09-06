@@ -11,26 +11,30 @@ class Form extends React.Component {
         };
     }
 
-    handleChange = (event) => {
+    handleChange = (event, param) => {
         event.preventDefault();
+        console.log('param => ', param);
         const { name, value, required } = event.target;
         console.log(name, value, value.length, required);
+        let error = {};
         if (required && value.length < 3) {
-            this.setState.formErrors = {name: name + ' should have minimum 3 characters'};
-        } else {
-            this.setState.formErrors = {};
+            console.log(param.find(ele => ele.valid === 'required'));
+            error = {errorTxt: name + param.find(ele => ele.valid === 'required').error};
         }
+        this.setState({
+            formErrors: error
+        });
         console.log(this.setState.formErrors);
     };
 
     formSubmit = e => {
-        e.preventDefault();    
+        // e.preventDefault();    
     
-        if (!this.form.isValid()) {
-          console.log('form is invalid: do not submit');
-        } else {
-          console.log('form is valid: submit');
-        }
+        // if(this.handleValidation()){
+        //     alert("Form submitted");
+        //  }else{
+        //     alert("Form has errors.")
+        //  }
     }
 
     render() 
@@ -38,7 +42,7 @@ class Form extends React.Component {
         this.setState.errors = this.props.formFields.map(ele => ele.key);
         console.log(this.setState.errors);
         return (
-            <form className="mt-4" ref={form => this.form = form} onSubmit={this.formSubmit}>
+            <form className="mt-4" name={this.form} ref={form => this.form = form} onClick={this.formSubmit} autoComplete="off">
                 {
                     this.props.formFields.map(ele => {
                         return (
@@ -46,6 +50,8 @@ class Form extends React.Component {
                             ele={ele}
                             key={ele.key}
                             handleChange={this.handleChange}
+                            valids={ele.valids}
+                            formErrors={this.state.formErrors}
                             ></Formfield>
                         )
                     })

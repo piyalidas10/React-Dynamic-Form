@@ -1,10 +1,10 @@
 
 import React from 'react';
-
+import Error from '../Error/Error';
 
 const Formfield = (props) => {
     console.log(props);
-    const {ele:{input, key, required, items}, handleChange} = props;
+    const {ele:{input, key, required, items}, formErrors, handleChange} = props;
     return (
         <div className="form-group" key={key}>
         {
@@ -18,8 +18,15 @@ const Formfield = (props) => {
                             name={key}
                             placeholder={key}
                             required={required}
-                            onChange={handleChange}/>
+                            minLength={3}
+                            maxLength={30}
+                            onChange={(e) => handleChange(e, props.valids)}/>
                         </div>
+                        {
+                            Object.keys(formErrors).length > 0 && (
+                                <Error name={key} error={formErrors} />
+                            )
+                        }
                 </div> 
             ) : (
                 <React.Fragment>
@@ -44,19 +51,25 @@ const Formfield = (props) => {
                                 </div>
                             ))
                         }
+                        {/* <Error name={key} error={error}>
+                        </Error> */}
                         </div>
                      ) : (
                         <div className="row">
-                        <label className="col-md-4">{key}</label>
-                        <div className="col-md-8">
-                            <textarea 
-                            className="form-control"
-                            name={key}
-                            placeholder={key}
-                            onChange={handleChange}
-                            required={required}></textarea>
+                            <label className="col-md-4">{key}</label>
+                            <div className="col-md-8">
+                                <textarea 
+                                className="form-control"
+                                name={key}
+                                placeholder={key}
+                                onChange={handleChange}
+                                minLength={3}
+                                maxLength={100}
+                                required={required}></textarea>
+                            </div>
+                            {/* <Error name={key} error={error}>
+                            </Error> */}
                         </div>
-                    </div>
                      )
                   }
                 </React.Fragment>
