@@ -129,40 +129,5 @@
         }
         ],
         "btn": "register"
-    },
-    "login": {
-        "pageTitle": "login",
-        "formFields": [
-            {
-            "key": "emailId",
-            "input": "email",
-            "required": "required",
-            "valids": [{
-                "valid": "required",
-                "error": "emailId is required"
-            },
-            {
-                "valid": "emailId",
-                "error": "emailId must be valid"
-            }
-            ]
-        },
-        {
-        "key": "password",
-            "input": "password",
-            "required": "required",
-            "valids": [{
-                "valid": "required",
-                "error": "password is required"
-            },
-            {
-                "valid": "minlength",
-                "length": 6,
-                "error": "Password must be at least 6 characters"
-            }
-            ]
-        }
-        ],
-        "btn": "login"
     }
 }

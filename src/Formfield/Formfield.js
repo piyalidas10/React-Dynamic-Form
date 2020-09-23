@@ -1,10 +1,58 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Error from '../Error/Error';
 
 const Formfield = (props) => {
     console.log(props);
-    const {ele:{input, key, required, items}, formErrors, handleChange} = props;
+    const {ele:{input, key, required, items}, valids, onInputHandler} = props;
+    // Declare a new state variable, which we'll call "count"
+    const [count, setCount] = useState({});
+    let formClasses = ['form-control'];
+
+    const handleChange = (event, param) => {
+        const { name } = event.target;
+        console.log('event => ', event);
+        let checkValidationReturn = checkValidation(event, param);
+        setCount(checkValidationReturn.error);
+        console.log(name, checkValidationReturn.value);
+        onInputHandler(name, checkValidationReturn.value);
+    };
+
+    const checkValidation = (event, param) => {
+        console.log(param);
+        const { name, value } = event.target;
+        console.log('----------------------------------------------', value);
+        let error = {};
+        let requiredCheck, patternCheck, minlengthCheck, emailIdCheck;
+        const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+        if (param) {
+            requiredCheck = param.find(ele => ele.valid === 'required');
+            patternCheck = param.find(ele => ele.valid === 'pattern');
+            minlengthCheck = param.find(ele => ele.valid === 'minlength');
+            emailIdCheck = param.find(ele => ele.valid === 'emailId');
+        }
+        if (requiredCheck && Object.keys(requiredCheck).length > 0 && value.length === 0) {
+            error = {errorTxt: requiredCheck.error};
+        } else if (minlengthCheck && value.length < minlengthCheck.length) {
+            error = {errorTxt: minlengthCheck.error};
+        } else if (patternCheck && Object.keys(patternCheck).length > 0) {
+            if (!value.match(patternCheck.validator)) {
+                error = {errorTxt: patternCheck.error};
+            } else {
+                error = {};
+            }
+        } else if (emailIdCheck && !value.match(emailPattern)) {
+            error = {errorTxt: emailIdCheck.error};
+        } else {
+            error = {};
+        }
+        return {error, value};
+    };
+
+    if (Object.keys(count).length > 0)  {
+        formClasses.push('error');
+    }
+
     return (
         <div className="form-group" key={key}>
         {
@@ -13,7 +61,7 @@ const Formfield = (props) => {
                     <label className="col-md-4">{key}</label>
                         <div className="col-md-8">
                             <input
-                            className="form-control"
+                            className={formClasses.join(' ')}
                             type={input}
                             name={key}
                             placeholder={key}
@@ -21,12 +69,12 @@ const Formfield = (props) => {
                             minLength={3}
                             maxLength={30}
                             onChange={(e) => handleChange(e, props.valids)}/>
+                            {
+                                Object.keys(count).length > 0 && (
+                                    <Error name={key} error={count} />
+                                )
+                            }
                         </div>
-                        {
-                            Object.keys(formErrors).length > 0 && (
-                                <Error name={key} error={formErrors} />
-                            )
-                        }
                 </div> 
             ) : (
                 <React.Fragment>
@@ -51,8 +99,11 @@ const Formfield = (props) => {
                                 </div>
                             ))
                         }
-                        {/* <Error name={key} error={error}>
-                        </Error> */}
+                        {
+                                Object.keys(count).length > 0 && (
+                                    <Error name={key} error={count} />
+                                )
+                        }
                         </div>
                      ) : (
                         <div className="row">
@@ -67,8 +118,11 @@ const Formfield = (props) => {
                                 maxLength={100}
                                 required={required}></textarea>
                             </div>
-                            {/* <Error name={key} error={error}>
-                            </Error> */}
+                            {
+                                Object.keys(count).length > 0 && (
+                                    <Error name={key} error={count} />
+                                )
+                            }
                         </div>
                      )
                   }

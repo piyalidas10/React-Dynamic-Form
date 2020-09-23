@@ -9,6 +9,12 @@ npm start
 http://localhost:3000/
 ```
 
+### Reference URL
+https://stackoverflow.com/questions/41296668/reactjs-form-input-validation
+https://goshakkk.name/submit-time-validation-react/
+http://jsfiddle.net/5e6zr2Lq/1/
+
+
 ![Dynamic Form in React](dynamic_form.png)
 
 ### Form Component
@@ -105,6 +111,14 @@ const Formfield = (props) => {
     )
 }
 ```
+
+
+Constructor: Constructor is Used to initialize the state.
+
+State : Components that contain local state have a property called "this.state".
+
+What will happen if I use setState() function in constructor of a Class in ReactJS or React Native?
+SetState: React components have a method available to them called setState Calling "this.setState" causes React to re-render your application and update the DOM.you can also track of prevstate in setState If you use setState in constructor you would get error like this:Can only update a mounted or mounting component. This usually means you called setState() on an unmounted component.
 
 
 

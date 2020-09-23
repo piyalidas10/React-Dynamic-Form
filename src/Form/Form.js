@@ -1,65 +1,82 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Formfield from '../Formfield/Formfield';
 
-class Form extends React.Component { 
-    constructor(props) { 
-        console.log(props);
+class Form extends Component { 
+    constructor(props) {
         super(props);
-        this.state = {
-            formErrors: {},
-            errors: this.props.formFields.map(ele => ele.key)
-        };
+        this.state= {
+        formData: {},
+        allFormErrorsCount: 0,
+        allFormErrorTxt: '',
+        isSubmit: false,
+        isFormInvalid: false
+      }
     }
 
-    handleChange = (event, param) => {
-        event.preventDefault();
-        console.log('param => ', param);
-        const { name, value, required } = event.target;
-        console.log(name, value, value.length, required);
-        let error = {};
-        if (required && value.length < 3) {
-            console.log(param.find(ele => ele.valid === 'required'));
-            error = {errorTxt: name + param.find(ele => ele.valid === 'required').error};
-        }
-        this.setState({
-            formErrors: error
-        });
-        console.log(this.setState.formErrors);
-    };
+    formSubmit = (e) => {
+        e.preventDefault();
+        console.log('formData after submit => ', this.state.formData);
+        const isFormInvalid = Object.values(this.state.formData).some(field => field === '');
+        console.log(isFormInvalid);
+        if (isFormInvalid) {
+            this.setState({
+                isFormInvalid: isFormInvalid,
+                allFormErrorTxt : 'Please fillup required fields',
+                isSubmit: true
+            });
+        } else {
+            this.setState({
+                isFormInvalid: isFormInvalid,
+                allFormErrorTxt : '',
+                isSubmit: true
+            });
+        }   
+    }
 
-    formSubmit = e => {
-        // e.preventDefault();    
-    
-        // if(this.handleValidation()){
-        //     alert("Form submitted");
-        //  }else{
-        //     alert("Form has errors.")
-        //  }
+    inputHandler = (fieldName, fieldValue) => {
+        const updatedForm = {
+            ...this.state.formData
+        };
+        updatedForm[fieldName] = fieldValue;
+        console.log('updatedForm => ', updatedForm);
+        this.setState({
+            formData: updatedForm
+        });
+        console.log('formData => ', this.state.formData);
     }
 
     render() 
     { 
-        this.setState.errors = this.props.formFields.map(ele => ele.key);
-        console.log(this.setState.errors);
+        const formFieldsArray = this.props.formFields;
+        formFieldsArray.forEach(ele => {
+            Object.assign(this.state.formData, {[ele.key]: ''});
+        });
         return (
-            <form className="mt-4" name={this.form} ref={form => this.form = form} onClick={this.formSubmit} autoComplete="off">
+            <div>
                 {
-                    this.props.formFields.map(ele => {
-                        return (
-                            <Formfield
-                            ele={ele}
-                            key={ele.key}
-                            handleChange={this.handleChange}
-                            valids={ele.valids}
-                            formErrors={this.state.formErrors}
-                            ></Formfield>
-                        )
-                    })
+                    this.state.isFormInvalid && this.state.isSubmit &&
+                        <div className="alert alert-danger" role="alert">
+                            {this.state.allFormErrorTxt}
+                        </div>
                 }
-                <div className="form-group text-center">
-                    <button className="btn btn-primary" type="submit">{this.props.btnName}</button>
-                </div>
-            </form>
+                <form className="mt-4" name={this.props.formName} onSubmit={this.formSubmit} noValidate>
+                    {
+                        formFieldsArray.map(ele => {
+                            return (
+                                <Formfield
+                                ele={ele}
+                                key={ele.key}
+                                valids={ele.valids}
+                                onInputHandler={this.inputHandler}
+                                ></Formfield>
+                            )
+                        })
+                    }
+                    <div className="form-group text-center">
+                        <button className="btn btn-primary" type="submit">{this.props.btnName}</button>
+                    </div>
+                </form>
+            </div>
         )
     } 
 } 
