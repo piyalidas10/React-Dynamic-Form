@@ -3,8 +3,7 @@ import React, { useState } from 'react';
 import Error from '../Error/Error';
 
 const Formfield = (props) => {
-    console.log(props);
-    const {ele:{input, key, required, items}, valids, onInputHandler} = props;
+    const {ele:{input, key, required, items}, onInputHandler} = props;
     // Declare a new state variable, which we'll call "count"
     const [count, setCount] = useState({});
     let formClasses = ['form-control'];
@@ -14,7 +13,6 @@ const Formfield = (props) => {
         console.log('event => ', event);
         let checkValidationReturn = checkValidation(event, param);
         setCount(checkValidationReturn.error);
-        console.log(name, checkValidationReturn.value);
         onInputHandler(name, checkValidationReturn.value);
     };
 
@@ -65,7 +63,6 @@ const Formfield = (props) => {
                             type={input}
                             name={key}
                             placeholder={key}
-                            required={required}
                             minLength={3}
                             maxLength={30}
                             onChange={(e) => handleChange(e, props.valids)}/>

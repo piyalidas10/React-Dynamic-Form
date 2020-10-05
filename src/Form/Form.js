@@ -8,60 +8,79 @@ class Form extends Component {
         formData: {},
         allFormErrorsCount: 0,
         allFormErrorTxt: '',
+        allFormSuccessTxt: '',
         isSubmit: false,
         isFormInvalid: false
-      }
+      };
     }
 
     formSubmit = (e) => {
         e.preventDefault();
+        const {formFields} = this.props;
         console.log('formData after submit => ', this.state.formData);
-        const isFormInvalid = Object.values(this.state.formData).some(field => field === '');
+        let valuesOfRequiredFields = [];
+        formFields.forEach(formElem => {
+            if ((formElem.valids.filter(ele => ele.valid === 'required')).length > 0) {
+                valuesOfRequiredFields.push(this.state.formData[formElem.key]);
+            }
+        });
+        console.log('valuesOfRequiredFields => ', valuesOfRequiredFields);
+        const isFormInvalid = valuesOfRequiredFields.some(field => field === '');
         console.log(isFormInvalid);
         if (isFormInvalid) {
             this.setState({
                 isFormInvalid: isFormInvalid,
-                allFormErrorTxt : 'Please fillup required fields',
-                isSubmit: true
+                allFormErrorTxt : 'Please fillup required fields'
             });
         } else {
             this.setState({
                 isFormInvalid: isFormInvalid,
                 allFormErrorTxt : '',
+                allFormSuccessTxt: 'Registration is successfull',
                 isSubmit: true
             });
         }   
     }
 
     inputHandler = (fieldName, fieldValue) => {
-        const updatedForm = {
-            ...this.state.formData
-        };
-        updatedForm[fieldName] = fieldValue;
-        console.log('updatedForm => ', updatedForm);
+        console.log([fieldName], fieldValue);
         this.setState({
-            formData: updatedForm
+            formData: {
+                ...this.state.formData,
+                [fieldName]: fieldValue
+            }
+        },() => {
+            console.log('Callback => ', this.state.formData);
         });
-        console.log('formData => ', this.state.formData);
+    }
+
+    componentDidMount() {
+        const {formFields} = this.props;
+        formFields.forEach(ele => {
+            Object.assign(this.state.formData, {[ele.key]: ''});
+        });
     }
 
     render() 
     { 
-        const formFieldsArray = this.props.formFields;
-        formFieldsArray.forEach(ele => {
-            Object.assign(this.state.formData, {[ele.key]: ''});
-        });
+        const {formFields} = this.props;
         return (
             <div>
                 {
-                    this.state.isFormInvalid && this.state.isSubmit &&
+                    this.state.isFormInvalid && 
                         <div className="alert alert-danger" role="alert">
                             {this.state.allFormErrorTxt}
                         </div>
                 }
+                {
+                    !this.state.isFormInvalid && this.state.isSubmit &&
+                        <div className="alert alert-success" role="alert">
+                            {this.state.allFormSuccessTxt}
+                        </div>
+                }
                 <form className="mt-4" name={this.props.formName} onSubmit={this.formSubmit} noValidate>
                     {
-                        formFieldsArray.map(ele => {
+                        formFields.map(ele => {
                             return (
                                 <Formfield
                                 ele={ele}
@@ -73,7 +92,7 @@ class Form extends Component {
                         })
                     }
                     <div className="form-group text-center">
-                        <button className="btn btn-primary" type="submit">{this.props.btnName}</button>
+                        <button className="btn btn-primary" type="submit" disabled={this.state.isSubmit}>{this.props.btnName}</button>
                     </div>
                 </form>
             </div>

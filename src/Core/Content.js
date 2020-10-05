@@ -5,14 +5,7 @@ import data from '../assets/data.json';
 class Content extends Component {
     state = {
       selected: 'register',
-      formValues: data['register'],
-      formSection: {
-        formData: {},
-        allFormErrorsCount: 0,
-        allFormErrorTxt: '',
-        isSubmit: false,
-        isFormInvalid: false
-      }
+      formValues: data['register']
     };
   
     clickFunction = (option) => {
